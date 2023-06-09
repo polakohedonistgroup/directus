@@ -49,6 +49,7 @@ export const useUserStore = defineStore({
 					'role.app_access',
 					'role.id',
 					'role.enforce_tfa',
+					'company.id',
 				];
 
 				const { data } = await api.get(`/users/me`, { params: { fields } });

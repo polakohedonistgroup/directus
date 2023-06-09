@@ -80,7 +80,7 @@
 
 			<file-lightbox :id="image.id" v-model="lightboxActive" />
 		</div>
-		<v-upload v-else from-library from-url :from-user="createAllowed" :folder="folder" @input="update($event.id)" />
+		<v-upload v-else from-library from-url :from-user="createAllowed" :folder="comFolder" @input="update($event.id)" />
 	</div>
 </template>
 
@@ -89,6 +89,7 @@ import api, { addTokenToURL } from '@/api';
 import { useRelationM2O } from '@/composables/use-relation-m2o';
 import { useRelationPermissionsM2O } from '@/composables/use-relation-permissions';
 import { RelationQuerySingle, useRelationSingle } from '@/composables/use-relation-single';
+import { useUserStore } from '@/stores/user';
 import { formatFilesize } from '@/utils/format-filesize';
 import { getAssetUrl } from '@/utils/get-asset-url';
 import { readableMimeType } from '@/utils/readable-mime-type';
@@ -132,6 +133,7 @@ const query = ref<RelationQuerySingle>({
 const { collection, field } = toRefs(props);
 const { relationInfo } = useRelationM2O(collection, field);
 const { displayItem: image, loading, update, remove, refresh } = useRelationSingle(value, query, relationInfo);
+const userStore = useUserStore();
 
 const { t, n, te } = useI18n();
 
@@ -166,6 +168,14 @@ const meta = computed(() => {
 	}
 
 	return `${formatFilesize(filesize)} • ${type}`;
+});
+
+const comFolder = computed(() => {
+	if (props.collection === 'events' && props.field === 'image_cover') {
+		return userStore.currentUser?.company?.id ?? props.folder;
+	}
+
+	return props.folder;
 });
 
 const editImageDetails = ref(false);
