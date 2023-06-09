@@ -13,6 +13,7 @@ import type { Knex } from 'knex';
 import { cloneDeep, flatten, isArray, isNil, merge, reduce, uniq, uniqWith } from 'lodash-es';
 import { GENERATE_SPECIAL } from '../constants.js';
 import getDatabase from '../database/index.js';
+import env from '../env.js';
 import { ForbiddenException } from '../exceptions/index.js';
 import type {
 	AbstractServiceOptions,
@@ -499,7 +500,11 @@ export class AuthorizationService {
 				return permission.collection === collection && permission.action === action;
 			});
 
-			if (!permission) throw new ForbiddenException();
+			if (!permission) {
+				throw env['LOG_LEVEL'] === 'debug'
+					? new ForbiddenException(`You don't have permissions to ${action} in ${collection}.`)
+					: new ForbiddenException();
+			}
 
 			// Check if you have permission to access the fields you're trying to access
 
@@ -510,7 +515,9 @@ export class AuthorizationService {
 				const invalidKeys = keysInData.filter((fieldKey) => allowedFields.includes(fieldKey) === false);
 
 				if (invalidKeys.length > 0) {
-					throw new ForbiddenException();
+					throw env['LOG_LEVEL'] === 'debug'
+						? new ForbiddenException(`You don't have permissions to ${action} ${invalidKeys.join()} in ${collection}.`)
+						: new ForbiddenException();
 				}
 			}
 		}

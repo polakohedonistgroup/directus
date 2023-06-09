@@ -1,5 +1,6 @@
 import type { SchemaOverview } from '@directus/types';
 import validateUUID from 'uuid-validate';
+import env from '../env.js';
 import { ForbiddenException } from '../exceptions/forbidden.js';
 import type { PrimaryKey } from '../types/index.js';
 
@@ -20,9 +21,13 @@ export function validateKeys(
 		const primaryKeyFieldType = schema.collections[collection]?.fields[keyField]?.type;
 
 		if (primaryKeyFieldType === 'uuid' && !validateUUID(String(keys))) {
-			throw new ForbiddenException();
+			throw env['LOG_LEVEL'] === 'debug'
+				? new ForbiddenException(`Invalid key ${keys} in ${collection} (expected uuid).`)
+				: new ForbiddenException();
 		} else if (primaryKeyFieldType === 'integer' && !Number.isInteger(Number(keys))) {
-			throw new ForbiddenException();
+			throw env['LOG_LEVEL'] === 'debug'
+				? new ForbiddenException(`Invalid key ${keys} in ${collection} (expected integer).`)
+				: new ForbiddenException();
 		}
 	}
 }
