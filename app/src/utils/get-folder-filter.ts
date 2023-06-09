@@ -1,3 +1,4 @@
+import { usePermissionsStore } from '@/stores/permissions';
 import { SpecialFolder } from '@/types/folders';
 import { Filter } from '@directus/types';
 import { subDays } from 'date-fns';
@@ -43,6 +44,20 @@ export function getFolderFilter(folder?: string, special?: SpecialFolder, curren
 				_gt: subDays(new Date(), 5).toISOString(),
 			},
 		});
+	}
+
+	if (special === 'all' || special === 'recent') {
+		const readPermissions = usePermissionsStore().permissions.find(
+			(permission) => permission.action === 'read' && permission.collection === 'directus_files'
+		);
+
+		if (readPermissions?.permissions && Object.keys(readPermissions.permissions).length) {
+			if (currentUserId) {
+				filterParsed._and.push({ uploaded_by: { _eq: currentUserId } });
+			} else {
+				filterParsed._and.push({ folder: { _null: true } });
+			}
+		}
 	}
 
 	return filterParsed;
