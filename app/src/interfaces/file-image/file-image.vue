@@ -171,8 +171,11 @@ const meta = computed(() => {
 });
 
 const comFolder = computed(() => {
-	if (props.collection === 'events' && props.field === 'image_cover') {
-		return userStore.currentUser?.company?.id ?? props.folder;
+	if (
+		(props.collection === 'events' && props.field === 'image_cover') ||
+		(props.collection === 'event_types' && props.field === 'image_cover')
+	) {
+		return userStore.currentUser?.company?.id;
 	}
 
 	return props.folder;
