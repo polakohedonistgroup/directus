@@ -177,6 +177,12 @@
 					:search="search"
 					@refresh="refresh"
 				/>
+				<flow-sidebar-detail
+					location="collection"
+					collection="directus_files"
+					:selection="selection"
+					@refresh="batchRefresh"
+				/>
 			</template>
 
 			<template v-if="showDropEffect">
@@ -203,6 +209,7 @@ import { unexpectedError } from '@/utils/unexpected-error';
 import { uploadFiles } from '@/utils/upload-files';
 import { getFolderFilter } from '@/utils/get-folder-filter';
 import DrawerBatch from '@/views/private/components/drawer-batch.vue';
+import FlowSidebarDetail from '@/views/private/components/flow-sidebar-detail.vue';
 import FolderPicker from '@/views/private/components/folder-picker.vue';
 import LayoutSidebarDetail from '@/views/private/components/layout-sidebar-detail.vue';
 import SearchInput from '@/views/private/components/search-input.vue';
@@ -383,6 +390,11 @@ function useMovetoFolder() {
 
 async function refresh() {
 	await layoutRef.value?.state?.refresh?.();
+}
+
+async function batchRefresh() {
+	selection.value = [];
+	await refresh();
 }
 
 function clearFilters() {
