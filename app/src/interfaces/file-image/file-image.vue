@@ -172,6 +172,7 @@ const meta = computed(() => {
 
 const comFolder = computed(() => {
 	if (
+		(props.collection === 'companies' && props.field === 'image_logo') ||
 		(props.collection === 'events' && props.field === 'image_cover') ||
 		(props.collection === 'event_types' && props.field === 'image_cover')
 	) {
