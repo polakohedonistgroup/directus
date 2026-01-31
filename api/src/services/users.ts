@@ -411,7 +411,7 @@ export class UsersService extends ItemsService {
 
 		const user = await this.getUserByEmail(email);
 
-		if (user?.status !== 'active') {
+		if (!user || (user.status !== 'active' && user.status !== 'suspended' && user.status !== 'invited')) {
 			await stall(STALL_TIME, timeStart);
 			throw new ForbiddenError();
 		}
