@@ -469,7 +469,7 @@ export class UsersService extends ItemsService {
 
 		const user = await this.getUserByEmail(email);
 
-		if (user?.status !== 'active' || hash !== getSimpleHash('' + user.password)) {
+		if (!user || (user.status !== 'active' && user.status !== 'suspended' && user.status !== 'invited') || hash !== getSimpleHash('' + user.password)) {
 			throw new ForbiddenError();
 		}
 
