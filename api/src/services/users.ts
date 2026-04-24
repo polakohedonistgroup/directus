@@ -437,8 +437,9 @@ export class UsersService extends ItemsService {
 		const timeStart = performance.now();
 
 		const user = await this.getUserByEmail(email);
+		const allowedUserStatuses = ['active', 'suspended', 'invited'];
 
-		if (user?.status !== 'active') {
+		if (!allowedUserStatuses.includes(user?.status)) {
 			await stall(STALL_TIME, timeStart);
 			throw new ForbiddenError();
 		}
@@ -495,8 +496,9 @@ export class UsersService extends ItemsService {
 		}
 
 		const user = await this.getUserByEmail(email);
+		const allowedUserStatuses = ['active', 'suspended', 'invited'];
 
-		if (user?.status !== 'active' || hash !== getSimpleHash('' + user.password)) {
+		if (!allowedUserStatuses.includes(user?.status) || hash !== getSimpleHash('' + user.password)) {
 			throw new ForbiddenError();
 		}
 
